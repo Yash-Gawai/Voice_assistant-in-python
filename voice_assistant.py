@@ -17,7 +17,7 @@ def speak(audio):
     engine.runAndWait()
 
 
-def take_command():
+def take_command(): # Function is called wherever user input in the form of speech is to be taken
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
@@ -51,7 +51,7 @@ def wishing():
 
 
 class WordMeanings:
-    def finding_meaning(self,query):
+    def finding_meaning(self,query): # To search the website for the queried word
         query = query.split(" ")
         word_to_search = query[-1]
         scrape_url = "https://www.oxfordlearnersdictionaries.com/definition/english/" + word_to_search
@@ -67,14 +67,14 @@ class WordMeanings:
         else:
             speak("Failed to get response...")
 
-    def show_origin(self,soup):
+    def show_origin(self,soup): # To print out the origin of the queried word
         try:
             origin = soup.find("span", {"unbox": "wordorigin"})
             print("Origin: ",origin.text)
         except AttributeError:
             pass
 
-    def show_definitions(self,soup):
+    def show_definitions(self,soup): # To fidn the definition of the queried word
         senses = soup.find_all("li", class_="sense")
         speak("Here's one meaning of the word per the oxford dictionary")
         count = 1
@@ -84,7 +84,7 @@ class WordMeanings:
                 speak(definition)
                 count+=1
             # Examples
-                examples = s.find_all("ul", class_="examples")
+                examples = s.find_all("ul", class_="examples") # Returns a sentence using the queried word
                 for e in examples:
                     for ex in e.find_all("li"):
                         if count == 2:
@@ -92,7 +92,7 @@ class WordMeanings:
                             speak(ex.text)
                             count+=1
             else:
-                speak("Printing a few other meanings....")
+                speak("Printing a few other meanings....") # Prints meaning of the word of more than one is present
                 print(definition)
                 count+=1
                 if count >= 5:
@@ -100,20 +100,20 @@ class WordMeanings:
 
 
 def weather_getter():
-    api_key = "you api key here"
+    api_key = "you api key here" # API key can be found by signing in to the webite and putting it here
     speak("Tell me the name of the city...")
     city_name = take_command()
-    geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=5&appid={api_key}"
+    geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=5&appid={api_key}" # To find the coordinated of the location
     response = requests.get(geo_url)
     abc = response.json()
     if abc:
         lat = abc[0]["lat"]
         lon = abc[0]["lon"]
-        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}" # To search for the info using the coordinates
         resp = requests.get(weather_url)
         x = resp.json()
         y = x["main"]
-        current_temperature = int(y["temp"]) - 273.13
+        current_temperature = int(y["temp"]) - 273.13 # To conver the temperature to Celcius
         current_humidiy = y["humidity"]
         z = x["weather"]
         weather_description = z[0]["description"]
@@ -122,13 +122,13 @@ def weather_getter():
         speak("City not found")
 
 def time_getter():
-    time_now = str(datetime.datetime.now()).split(" ")
-    a = time_now[1][0:5]
+    time_now = str(datetime.datetime.now()).split(" ") 
+    a = time_now[1][0:5] # Remove the date and only keep the time
     d = datetime.datetime.strptime(a, "%H:%M")
-    s = d.strftime("%I:%M %p")
-    hh = s[0:2].lstrip("0")
+    s = d.strftime("%I:%M %p") # Converts the time from 24 hour to 12 hour format
+    hh = s[0:2].lstrip("0") # Removes and preceeding zeros
     mm = s[3:]
-    speak(f"The current time is {hh} {mm}")
+    speak(f"The current time is {hh} {mm}") # Tells the time in 12-hour format, eg 2:34 PM
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 import pyttsx3
 import speech_recognition as sr
 import webbrowser
-import os
 import requests
 from bs4 import BeautifulSoup
 import datetime
